@@ -40,7 +40,7 @@ try:
         config = json.load(f)
     
     # Get current statusline command
-    current_command = config.get('statusLine', '')
+    current_command = config.get('statusLine', {}).get('command', '')
     
     # Check if game is already installed
     if 'productivity-game.sh' in current_command:
@@ -49,38 +49,21 @@ try:
     
     # Create new command that appends game to existing statusline
     if current_command:
-        # Existing statusline: append game with right-alignment
-        new_command = f'''
-# Get existing statusline
-existing_statusline=\$({current_command})
-
-# Get productivity game display
-game_display=\$({game_script})
-
-# Get terminal width
-term_width=\$(tput cols 2>/dev/null || echo 80)
-
-# Calculate padding
-existing_length=\${#existing_statusline}
-game_length=\${#game_display}
-total_length=\$((existing_length + game_length + 2))
-
-if [ \$total_length -lt \$term_width ]; then
-    # Add padding to push game to the right
-    padding_length=\$((term_width - total_length))
-    padding=\$(printf '%*s' \$padding_length '')
-    echo "\$existing_statusline\$padding  \$game_display"
-else
-    # No room for padding
-    echo "\$existing_statusline  \$game_display"
-fi
-'''
+        # Append game to existing statusline with separator
+        new_command = f'''existing_statusline=$({current_command})
+game_display=$({game_script})
+echo "$existing_statusline  |  $game_display"'''
     else:
         # No existing statusline: just show the game
         new_command = game_script
     
     # Update config
-    config['statusLine'] = new_command.strip()
+    if 'statusLine' not in config:
+        config['statusLine'] = {}
+    if isinstance(config['statusLine'], dict):
+        config['statusLine']['command'] = new_command.strip()
+    else:
+        config['statusLine'] = {'type': 'command', 'command': new_command.strip()}
     
     # Add hooks for activity tracking
     if 'hooks' not in config:

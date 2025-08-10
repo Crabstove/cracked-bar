@@ -1,111 +1,70 @@
-# Claude Code Productivity Game
+# cracked-bar
 
-A motivational productivity tracker for Claude Code that gamifies your coding sessions. Track your daily active usage and compete against your personal best!
+> a chaotic productivity tracker that makes you compete with yourself because external validation is temporary but personal bests are forever
 
-## What it does
+## what is this
 
-Adds a productivity game to your Claude Code statusline that displays:
-- **Token burn counter** - Shows how many tokens you've used today
-- **Progress bar** - Visual representation of today's productivity vs your personal best
-- **Achievement messages** - Special messages when you hit milestones
+imagine if your terminal had a little friend that tracks how much you're coding and silently judges you when you're not beating your personal best. that's cracked-bar.
 
-## Display Examples
+it's a statusline addon for claude code that:
+- tracks your actual coding time (not just time with the editor open)
+- shows you a progress bar comparing today vs your personal best
+- displays fun chaos moods like "slightly feral" and "unhinged mode"
+- reminds you that tests are optional and sanity is negotiable
+
+## the vibe
 
 ```
-Your existing statusline                    tokens burned: 12.3k | ████░░░░░░
-Your existing statusline                    tokens burned: 15.2k | CRACKED ENGINEER
-Your existing statusline                    tokens burned: 8.1k | ██████░░░░
+✧･ﾟ slightly feral in ~/cracked-bar ･ﾟ✧ | main | (╯°□°）╯︵ ┻━┻          tokens burned: 4.2k | ████████░░
 ```
 
-## Progress Indicators
-
-- `░░░░░░░░░░` - Just starting (0% of personal best)
-- `████░░░░░░` - 40% of personal best  
-- `████████░░` - 80% of personal best
-- `gmi` - 100% of personal best (you're gonna make it!)
-- `god chosen dev` - 110% of personal best
-- `CRACKED ENGINEER` - 120% of personal best
-- `TOUCH GRASS MAYBE?` - 130% of personal best
-
-## Installation
-
-1. Clone this repository:
-```bash
-git clone https://github.com/yourusername/productivity-game-claude-code.git
-cd productivity-game-claude-code
+when you hit 130% of your personal best:
+```
+> literally just unhinged mode in ~/cracked-bar | main | don't ask          tokens burned: 6.9k | TOUCH GRASS MAYBE?
 ```
 
-2. Run the installation script:
-```bash
-chmod +x install.sh
-./install.sh
-```
+## how it works
 
-The installer will:
-- Backup your existing Claude Code settings
-- Append the productivity game to your current statusline
-- Configure hooks to track your actual Claude Code usage
-- Create tracking files in `~/.claude-code/`
+tracks your productivity through claude code hooks:
+- measures actual time spent getting responses and running tools
+- saves daily stats to `~/.claude-code/productivity.json`
+- compares today's grind to your personal best
+- progress bar fills as you approach your record
 
-## How it Works
+## installation (wip)
 
-### Active Time Tracking
-The game automatically tracks "active minutes" - total time Claude Code spends:
-- Generating responses
-- Executing tools
-- Running code
+1. clone this repo
+2. run the install script (when it works):
+   ```bash
+   ./install.sh
+   ```
 
-Tracking starts immediately after installation!
+3. or manually add to your claude code settings:
+   - copy the statusline command from `statusline-working.sh`
+   - add the hooks from `hooks/track-activity.sh`
 
-### Daily Rollover
-- At midnight (or first use of a new day), yesterday's score is saved
-- Personal best updates if you beat your record
-- New day starts fresh at 0
+## current status
 
-### Data Storage
-Your productivity data is stored in `~/.claude-code/productivity.json`:
-```json
-{
-  "personalBest": 145,
-  "today": {
-    "date": "2025-08-09", 
-    "activeMinutes": 72
-  },
-  "history": [
-    {"date": "2025-08-08", "minutes": 145},
-    {"date": "2025-08-07", "minutes": 89}
-  ]
-}
-```
+very much work in progress. things that work:
+- chaos moods and status messages ✓
+- progress bar display ✓
+- token counter (placeholder) ✓
+- personal best tracking (when hooks are configured) ~
 
-## Uninstallation
+things that don't:
+- automatic hook installation
+- actual token counting from claude code
+- proper activity tracking (needs hook integration)
+- the install script (it's trying its best)
 
-To remove the productivity game:
-1. Restore your backup: `cp ~/.claude-code/settings.json.backup.* ~/.claude-code/settings.json`
-2. Remove tracking files: `rm ~/.claude-code/productivity.json`
+## philosophy
 
-## Future Enhancements
+why track productivity? because:
+- seeing numbers go up activates neurons
+- competing with yesterday-you is healthier than comparing to others
+- sometimes you need a progress bar to realize you've been coding for 8 hours straight
+- "touch grass maybe?" is self-care
 
-- [ ] Hook into Claude Code events for accurate tracking:
-  - Response generation time (UserPromptSubmit → Stop)  
-  - Tool execution time (PreToolUse → PostToolUse)
-- [ ] Add weekly/monthly statistics
-- [ ] Export productivity reports
-- [ ] Customizable achievement thresholds
-- [ ] Different game modes (efficiency vs volume)
+---
 
-## Contributing
-
-PRs welcome! Some ideas:
-- Better token tracking integration
-- Additional game modes
-- Statistics visualization
-- Custom achievement messages
-
-## License
-
-MIT
-
-## Credits
-
-Created with subtle chaos energy and the motivation to track productivity without being too serious about it.
+*built with chaos, maintained with vibes*
