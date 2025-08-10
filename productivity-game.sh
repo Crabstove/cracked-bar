@@ -4,10 +4,10 @@
 # Outputs: "tokens burned: X.Xk | [10-char progress bar]"
 # Designed to be appended to any existing statusline
 
-PRODUCTIVITY_FILE="$HOME/.claude-code/productivity.json"
+PRODUCTIVITY_FILE="$HOME/.claude/productivity.json"
 
 # Ensure directory exists
-mkdir -p "$HOME/.claude-code"
+mkdir -p "$HOME/.claude"
 
 # Initialize productivity file if it doesn't exist
 if [ ! -f "$PRODUCTIVITY_FILE" ]; then
@@ -71,9 +71,15 @@ check_day_rollover
 game_display=$(python3 << 'EOF'
 import json
 import os
+import sys
 
 try:
-    with open(os.path.expanduser('~/.claude-code/productivity.json'), 'r') as f:
+    productivity_file = os.path.expanduser('~/.claude/productivity.json')
+    if not os.path.exists(productivity_file):
+        print("░░░░░░░░░░")
+        sys.exit(0)
+    
+    with open(productivity_file, 'r') as f:
         data = json.load(f)
     
     personal_best = data['personalBest']
@@ -107,8 +113,8 @@ EOF
 # Get token count from Claude Code environment
 # TODO: Replace with actual token extraction from Claude Code
 # For now, using placeholder that simulates token usage
-if [ -f "$HOME/.claude-code/session_tokens" ]; then
-    token_count=$(cat "$HOME/.claude-code/session_tokens")
+if [ -f "$HOME/.claude/session_tokens" ]; then
+    token_count=$(cat "$HOME/.claude/session_tokens")
 else
     # Placeholder: accumulate based on activity
     token_count=$(python3 << 'EOF'
@@ -116,11 +122,18 @@ import json
 import os
 
 try:
-    with open(os.path.expanduser('~/.claude-code/productivity.json'), 'r') as f:
-        data = json.load(f)
-    # Rough estimate: 100 tokens per active minute
-    tokens = data['today']['activeMinutes'] * 0.1
-    print(f"{tokens:.1f}")
+    productivity_file = os.path.expanduser('~/.claude/productivity.json')
+    if os.path.exists(productivity_file):
+        with open(productivity_file, 'r') as f:
+            data = json.load(f)
+        # Rough estimate: 1000 tokens per active minute (more realistic)
+        tokens = data['today']['activeMinutes'] * 1.0
+        # Show at least 0.1k if there's any activity
+        if tokens > 0 and tokens < 0.1:
+            tokens = 0.1
+        print(f"{tokens:.1f}")
+    else:
+        print("0.0")
 except:
     print("0.0")
 EOF

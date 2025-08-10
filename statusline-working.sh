@@ -1,4 +1,7 @@
-#\!/bin/bash
+#!/bin/bash
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Simplified statusline with game
 cwd_display="/$(basename "$PWD")"
@@ -18,8 +21,12 @@ case $border_style in
     4) statusline="*${chaos_mood}* in ~${cwd_display} | ${git_branch} | ${status_msg}" ;;
 esac
 
-# Get game display
-game_display=$(bash /Users/crabstove/dev/productivity-game-claude-code/productivity-game.sh)
-
-# Output with game
-echo "${statusline}          ${game_display}"
+# Get game display - use script from same directory
+if [ -f "$SCRIPT_DIR/productivity-game.sh" ]; then
+    game_display=$(bash "$SCRIPT_DIR/productivity-game.sh")
+    # Output with game
+    echo "${statusline}          ${game_display}"
+else
+    # Fallback to just statusline if game script not found
+    echo "${statusline}"
+fi

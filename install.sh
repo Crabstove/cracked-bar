@@ -3,7 +3,7 @@
 # Installation script for Claude Code Productivity Game
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_CONFIG="$HOME/.claude-code/settings.json"
+CLAUDE_CONFIG="$HOME/.claude/settings.json"
 GAME_SCRIPT="$SCRIPT_DIR/productivity-game.sh"
 
 echo "Installing Claude Code Productivity Game..."
@@ -13,9 +13,10 @@ chmod +x "$GAME_SCRIPT"
 
 # Check if settings.json exists
 if [ ! -f "$CLAUDE_CONFIG" ]; then
-    echo "Error: Claude Code settings not found at $CLAUDE_CONFIG"
-    echo "Please ensure Claude Code is installed and configured first."
-    exit 1
+    echo "Warning: Claude Code settings not found at $CLAUDE_CONFIG"
+    echo "Creating new settings file..."
+    mkdir -p "$(dirname "$CLAUDE_CONFIG")"
+    echo '{}' > "$CLAUDE_CONFIG"
 fi
 
 # Backup existing settings
@@ -125,4 +126,4 @@ echo "  gmi = 100% of personal best"
 echo "  CRACKED ENGINEER = 120% of personal best"
 echo "  TOUCH GRASS MAYBE? = 130% of personal best"
 echo ""
-echo "Data is stored in ~/.claude-code/productivity.json"
+echo "Data is stored in ~/.claude/productivity.json"

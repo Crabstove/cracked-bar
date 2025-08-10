@@ -4,8 +4,11 @@
 # This hook is called by UserPromptSubmit and Stop events to track response time
 # Also called by PreToolUse and PostToolUse to track tool execution time
 
-PRODUCTIVITY_FILE="$HOME/.claude-code/productivity.json"
-TIMING_FILE="$HOME/.claude-code/current_timing"
+PRODUCTIVITY_FILE="$HOME/.claude/productivity.json"
+TIMING_FILE="$HOME/.claude/current_timing"
+
+# Ensure directory exists
+mkdir -p "$HOME/.claude"
 
 # Parse the hook event type from input
 EVENT_TYPE="$1"
@@ -22,10 +25,13 @@ case "$EVENT_TYPE" in
         if [ -f "$TIMING_FILE" ]; then
             START_TIME=$(cat "$TIMING_FILE")
             DURATION=$((TIMESTAMP - START_TIME))
-            MINUTES=$(echo "scale=2; $DURATION / 60" | bc)
+            # Use Python instead of bc for better portability
+            MINUTES=$(python3 -c "print(round($DURATION / 60, 2))")
             
-            # Add minutes to today's total
-            python3 << EOF
+            # Only update if productivity file exists
+            if [ -f "$PRODUCTIVITY_FILE" ]; then
+                # Add minutes to today's total
+                python3 << EOF
 import json
 from datetime import datetime
 
@@ -57,9 +63,15 @@ else:
 with open('$PRODUCTIVITY_FILE', 'w') as f:
     json.dump(data, f, indent=2)
 EOF
+            fi
             
-            # Clean up timing file
+            # Always clean up timing file
             rm -f "$TIMING_FILE"
         fi
+        ;;
+    
+    *)
+        # Unknown event type - clean up any orphaned timing files
+        rm -f "$TIMING_FILE"
         ;;
 esac
